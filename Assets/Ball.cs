@@ -20,6 +20,9 @@ public class Ball : MonoBehaviour
 
         float yVelocity = UnityEngine.Random.Range(-1,1);
 
+        if (yVelocity == 0f)
+            yVelocity = 1f;  // Makes sure that ball never has 0 y velocity.
+
         rb.velocity = new Vector2(xVelocity * startingSpeed, yVelocity * startingSpeed);
     }
 

@@ -5,6 +5,7 @@ using UnityEngine;
 public class P1 : MonoBehaviour
 {
     public float moveSpeed;
+    public static int p1score = 0;
 
     // Start is called before the first frame update
     void Start()

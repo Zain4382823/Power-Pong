@@ -3,16 +3,14 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
-public class Ball : MonoBehaviour
+public class BonusBall : MonoBehaviour
 {
     public Rigidbody2D rb;
 
-    public static string difficulty = "Nightmare";
-
-    // As default, let's assume difficulty is Normal.
-    float startingSpeed = 5f;
-    float speedIncrement = 1.2f;  // large increment, but infrequent!
-    int maxIncrements = 9;
+    // It's Bonus Ball, assume difficulty is Nightmare - NO SWITCH STATEMENT!
+    float startingSpeed = 2.5f;
+    float speedIncrement = 1.12f;  // Death by a THOUSAND increments!
+    int maxIncrements = 100;
 
     int incrementCount = 0;  // keeps track of how many speed increments have happened.
     float xVelocity;
@@ -21,21 +19,23 @@ public class Ball : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        switch (difficulty)  // check if difficulty is Hard or Nightmare - if so, adjust ball variables!
-        {
-            case "Hard":
-                startingSpeed = 5.65f;
-                speedIncrement = 1.15f;  // Medium increment, highly frequent!
-                maxIncrements = 15;
-                break;
-            case "Nightmare":
-                startingSpeed = 6f;
-                speedIncrement = 1.1f;  // Death by a THOUSAND increments!
-                maxIncrements = 100;
-                // Nightmare Exclusive -> Bonus Ball!
-                break;
-        }
+        GetComponent<Renderer>().enabled = false;  // at the start, make sure the ball is invisible!
 
+        if (Ball.difficulty == "Nightmare")
+            StartCoroutine(WaitAndSpawn());  // bonus ball only spawns in Nightmare mode...
+        else
+            rb.position = new Vector2(12,12); // If it's any other difficulty, hide bonus ball out of window!
+    }
+
+    IEnumerator WaitAndSpawn()  // wait a few seconds and then spawn the bonus ball!
+    {
+        yield return new WaitForSeconds(1f);
+        SpawnBonusBall();
+    }
+
+    void SpawnBonusBall()
+    {
+        GetComponent<Renderer>().enabled = true;  // When spawned, turn the ball visible!
         bool isRight = UnityEngine.Random.value >= 0.5f;
 
         xVelocity = -1f;
@@ -43,7 +43,7 @@ public class Ball : MonoBehaviour
         if (isRight)
             xVelocity = 1f;
 
-        yVelocity = UnityEngine.Random.Range(-1,1);
+        yVelocity = UnityEngine.Random.Range(-1, 1);
 
         if (yVelocity == 0f)
             yVelocity = 1f;  // Makes sure that ball never has 0 y velocity.
@@ -64,23 +64,9 @@ public class Ball : MonoBehaviour
 
             rb.velocity = new Vector2(xVelocity * startingSpeed, yVelocity * startingSpeed);  // reset velocity.
             incrementCount = 0; // reset incrementCount to zero, treat it like a new ball!
-            transform.position = new Vector3(0,0);  // teleports ball to the middle of the screen.
+            transform.position = new Vector3(0, 0);  // teleports ball to the middle of the screen.
             rb.velocity *= -1;  // ball goes in opposite direction.
         }
-
-        // checking win condition - player reaches 3 points
-        if (P1.p1score > 2 || P2.p2score > 2)
-            SceneManager.LoadScene("Results");  // a player has won the game, so we stop everything and load up the Results screen!
-
-        // color assignment depending on incrementCount
-        if(incrementCount > 8)
-            GetComponent<SpriteRenderer>().color = Color.red;  // red = Super speedy!
-        else if(incrementCount > 5 & incrementCount < 9)
-            GetComponent<SpriteRenderer>().color = Color.Lerp(Color.red, Color.yellow, 0.5f);  // orange = ramping up fast!
-        else if (incrementCount > 2 & incrementCount < 6)
-            GetComponent<SpriteRenderer>().color = Color.yellow;  // yellow = warming up.
-        else
-            GetComponent<SpriteRenderer>().color = Color.white;  // white = slow..
     }
 
     private void OnTriggerEnter2D(Collider2D coll)
@@ -96,5 +82,4 @@ public class Ball : MonoBehaviour
             }
         }
     }
-
 }

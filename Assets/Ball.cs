@@ -7,7 +7,7 @@ public class Ball : MonoBehaviour
 {
     public Rigidbody2D rb;
 
-    public static string difficulty = "Nightmare";
+    public static string difficulty = "Normal";
 
     // As default, let's assume difficulty is Normal.
     float startingSpeed = 5f;
@@ -25,8 +25,8 @@ public class Ball : MonoBehaviour
         {
             case "Hard":
                 startingSpeed = 5.65f;
-                speedIncrement = 1.15f;  // Medium increment, highly frequent!
-                maxIncrements = 15;
+                speedIncrement = 1.135f;  // Medium increment, highly frequent!
+                maxIncrements = 12;
                 break;
             case "Nightmare":
                 startingSpeed = 6f;
@@ -93,6 +93,12 @@ public class Ball : MonoBehaviour
             {
                 rb.velocity *= speedIncrement;  // increment ball speed by speedIncrement!
                 incrementCount++;
+            }
+
+            if (incrementCount >= 12)  // After 12 bounces.. Let's add an extra layer of difficulty to make things more unpredictable.
+            {
+                if (Random.value < 0.5f)           
+                    rb.velocity *= 1.05f;  // 50/50 chance to randomly speed up ball by 5% with each subsequent bounce!
             }
         }
     }

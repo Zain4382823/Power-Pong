@@ -7,10 +7,10 @@ public class Ball : MonoBehaviour
 {
     public Rigidbody2D rb;
 
-    public static string difficulty = "Normal";
+    public static string difficulty;
 
     // As default, let's assume difficulty is Normal.
-    float startingSpeed = 5f;
+    float startingSpeed = 5.25f;
     float speedIncrement = 1.2f;  // large increment, but infrequent!
     int maxIncrements = 9;
 
@@ -21,15 +21,17 @@ public class Ball : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        difficulty = PlayerPrefs.GetString("Difficulty", "Normal");  // set Normal as default if not set.
+
         switch (difficulty)  // check if difficulty is Hard or Nightmare - if so, adjust ball variables!
         {
             case "Hard":
-                startingSpeed = 5.65f;
-                speedIncrement = 1.135f;  // Medium increment, highly frequent!
-                maxIncrements = 12;
+                startingSpeed = 6.25f;
+                speedIncrement = 1.15f;  // Medium increment, highly frequent!
+                maxIncrements = 14;
                 break;
             case "Nightmare":
-                startingSpeed = 6f;
+                startingSpeed = 6.75f;
                 speedIncrement = 1.1f;  // Death by a THOUSAND increments!
                 maxIncrements = 100;
                 // Nightmare Exclusive -> Bonus Ball!
@@ -98,7 +100,7 @@ public class Ball : MonoBehaviour
             if (incrementCount >= 12)  // After 12 bounces.. Let's add an extra layer of difficulty to make things more unpredictable.
             {
                 if (Random.value < 0.5f)           
-                    rb.velocity *= 1.05f;  // 50/50 chance to randomly speed up ball by 5% with each subsequent bounce!
+                    rb.velocity *= 1.075f;  // 50/50 chance to randomly speed up ball by 7.5% with each subsequent bounce!
             }
         }
     }

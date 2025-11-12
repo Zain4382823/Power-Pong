@@ -60,9 +60,15 @@ public class Ball : MonoBehaviour
         if (rb.position.x < -15 || rb.position.x > 15)
         {
             if (rb.position.x < -15)
+            {
                 P2.p2score++;  // too far left = player 2 scores a point
+                ScoreUI.Instance?.FlashScore(1); // P2=1 for right score
+            }
             else
+            {
                 P1.p1score++;  // too far right = player 1 scores a point
+                ScoreUI.Instance?.FlashScore(0); // P1=0 for left score
+            }
 
             rb.velocity = new Vector2(xVelocity * startingSpeed, yVelocity * startingSpeed);  // reset velocity.
             incrementCount = 0; // reset incrementCount to zero, treat it like a new ball!

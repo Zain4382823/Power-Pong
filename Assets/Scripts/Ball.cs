@@ -10,8 +10,8 @@ public class Ball : MonoBehaviour
     public static string difficulty;
 
     // As default, let's assume difficulty is Normal.
-    float startingSpeed = 5.25f;
-    float speedIncrement = 1.2f;  // large increment, but infrequent!
+    float startingSpeed = 5f;
+    float speedIncrement = 1.125f;  // medium increment
     int maxIncrements = 9;
 
     int incrementCount = 0;  // keeps track of how many speed increments have happened.
@@ -26,26 +26,24 @@ public class Ball : MonoBehaviour
         switch (difficulty)  // check if difficulty is Hard or Nightmare - if so, adjust ball variables!
         {
             case "Hard":
-                startingSpeed = 6.25f;
-                speedIncrement = 1.15f;  // Medium increment, highly frequent!
-                maxIncrements = 14;
+                startingSpeed = 5.5f;
+                speedIncrement = 1.15f;  // Large increment
+                maxIncrements = 12;
                 break;
             case "Nightmare":
-                startingSpeed = 6.75f;
+                startingSpeed = 6.5f;
                 speedIncrement = 1.1f;  // Death by a THOUSAND increments!
                 maxIncrements = 100;
                 // Nightmare Exclusive -> Bonus Ball!
                 break;
         }
 
-        bool isRight = UnityEngine.Random.value >= 0.5f;
+        xVelocity = UnityEngine.Random.Range(0,1);
 
-        xVelocity = -1f;
+        yVelocity = UnityEngine.Random.Range(0,1);
 
-        if (isRight)
-            xVelocity = 1f;
-
-        yVelocity = UnityEngine.Random.Range(-1,1);
+        if (xVelocity == 0f)
+            xVelocity = 1f;  // Makes sure that ball never has 0 x velocity.
 
         if (yVelocity == 0f)
             yVelocity = 1f;  // Makes sure that ball never has 0 y velocity.
@@ -73,7 +71,6 @@ public class Ball : MonoBehaviour
             rb.velocity = new Vector2(xVelocity * startingSpeed, yVelocity * startingSpeed);  // reset velocity.
             incrementCount = 0; // reset incrementCount to zero, treat it like a new ball!
             transform.position = new Vector3(0,0);  // teleports ball to the middle of the screen.
-            rb.velocity *= -1;  // ball goes in opposite direction.
         }
 
         // checking win condition - player reaches 3 points
@@ -95,7 +92,43 @@ public class Ball : MonoBehaviour
     {
         if (coll.gameObject.tag == "Paddle")  // if the ball collides with a paddle...
         {
+
             rb.velocity *= -1;  // ball must get deflected NO MATTER WHAT.
+            xVelocity *= -1;
+            yVelocity *= -1;
+
+            if(incrementCount % 3 == 0 || incrementCount == maxIncrements)  // if incrementCount is divisible by 3 OR Max Increment reached
+            {
+                if(xVelocity > 0)  // and velocity is currently positive..
+                {
+                    xVelocity = UnityEngine.Random.Range(0, 2);
+
+                    yVelocity = UnityEngine.Random.Range(0, 1);  // randomise the ball's velocity! (Positive)
+
+                    if (xVelocity == 0f)
+                        xVelocity = 1.5f;
+
+                    if (yVelocity == 0f)
+                        yVelocity = 1f;
+                }
+                else  // and velocity is currently negative..
+                {
+                    xVelocity = UnityEngine.Random.Range(-1, 0);
+
+                    yVelocity = UnityEngine.Random.Range(-2, 0);  // randomise the ball's velocity! (Negative)
+
+                    if (xVelocity == 0f)
+                        xVelocity = -1f;
+
+                    if (yVelocity == 0f)
+                        yVelocity = -1.5f;
+                }
+
+                rb.velocity = new Vector2(xVelocity * startingSpeed, yVelocity * startingSpeed);  // update ball velocity after randomising velocity variables.
+
+                for (int i = 0; i < incrementCount; i++)
+                    rb.velocity *= speedIncrement;  // bring ball back to incremented speed so it doesn't lose its acceleration
+            }
 
             if (incrementCount < maxIncrements)  // also, if we haven't reached max increments yet...
             {

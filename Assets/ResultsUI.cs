@@ -52,16 +52,15 @@ public class ResultsUI : MonoBehaviour
             p1ScoreText.rectTransform.anchoredPosition += new Vector2(0, 0.4f);
             p2ScoreText.rectTransform.anchoredPosition += new Vector2(0, 0.4f);
         }
-            
+            if(finalScore.rectTransform.anchoredPosition.y > 440f)
+            upscroll = false;
     }
 
     IEnumerator MoveTimer()
     {
         yield return new WaitForSeconds(1.75f);
         upscroll = true;
-        yield return new WaitForSeconds(1.7f);
-        upscroll = false;
-        yield return new WaitForSeconds(2.25f);
+        yield return new WaitForSeconds(4.25f);
         SceneManager.LoadScene("Difficulty");  // back to the start - load up diff select scene!
     }
 
